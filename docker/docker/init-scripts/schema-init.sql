@@ -2,35 +2,34 @@
 CREATE SCHEMA IF NOT EXISTS documents;
 
 -- Crear las tablas dentro del esquema 'documents'
-CREATE TABLE IF NOT EXISTS document_data (
-    document_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS documents.document_data (
+    document_id SERIAL,
     user_id INT,
     document_name VARCHAR(255),
     document_tags TEXT[],
     file_size BIGINT,
     file_type VARCHAR(50),
     minio_path VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (document_id, user_id)
 );
 
 -- Otorgar privilegios al usuario 'admin' sobre el esquema y las tablas
 GRANT ALL PRIVILEGES ON SCHEMA documents TO admin;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA documents TO admin;
 
--- Establecer el search_path para usar el esquema 'documents' por defecto
-SET search_path TO documents, public;
-
 --insertar datos
 
-INSERT INTO document_data (user_id, document_name, document_tags, file_size, file_type, minio_path, created_at)
-VALUES
-(1, 'documento_1.pdf', ARRAY['tag1', 'tag2'], 500000, 'pdf', 'minio/path/documento_1.pdf', CURRENT_TIMESTAMP),
-(2, 'documento_2.pdf', ARRAY['tag3', 'tag4'], 300000, 'pdf', 'minio/path/documento_2.pdf', CURRENT_TIMESTAMP),
-(3, 'documento_3.pdf', ARRAY['tag1', 'tag3'], 700000, 'pdf', 'minio/path/documento_3.pdf', CURRENT_TIMESTAMP),
-(4, 'documento_4.txt', ARRAY['tag2', 'tag5'], 150000, 'txt', 'minio/path/documento_4.txt', CURRENT_TIMESTAMP),
-(5, 'documento_5.txt', ARRAY['tag1', 'tag4'], 120000, 'txt', 'minio/path/documento_5.txt', CURRENT_TIMESTAMP),
-(6, 'documento_6.docx', ARRAY['tag3', 'tag2'], 250000, 'docx', 'minio/path/documento_6.docx', CURRENT_TIMESTAMP),
-(7, 'documento_7.docx', ARRAY['tag4', 'tag5'], 450000, 'docx', 'minio/path/documento_7.docx', CURRENT_TIMESTAMP),
-(8, 'documento_8.xls', ARRAY['tag1', 'tag3'], 600000, 'xls', 'minio/path/documento_8.xls', CURRENT_TIMESTAMP),
-(9, 'documento_9.xls', ARRAY['tag2', 'tag4'], 350000, 'xls', 'minio/path/documento_9.xls', CURRENT_TIMESTAMP),
-(10, 'documento_10.pdf', ARRAY['tag5', 'tag1'], 800000, 'pdf', 'minio/path/documento_10.pdf', CURRENT_TIMESTAMP);
+INSERT INTO documents.document_data (user_id, document_name, document_tags, file_size, file_type, minio_path)
+VALUES 
+(112121, 'contract.pdf', ARRAY['legal', '2025'], 204800, 'PDF', '/files/contracts/contract.pdf'),
+(222121, 'presentation.pptx', ARRAY['slides', 'meeting'], 512000, 'PPTX', '/files/presentations/presentation.pptx'),
+(333333, 'budget.xlsx', ARRAY['finance', 'Q1'], 102400, 'XLSX', '/files/finance/budget.xlsx'),
+(443434, 'manual.pdf', ARRAY['guide', 'user'], 307200, 'PDF', '/files/manuals/manual.pdf'),
+(598980, 'proposal.docx', ARRAY['business', 'offer'], 256000, 'DOCX', '/files/docs/proposal.docx'),
+(633233, 'schedule.csv', ARRAY['calendar', 'tasks'], 51200, 'CSV', '/files/data/schedule.csv'),
+(744232, 'notes.txt', ARRAY['meeting', 'summary'], 2048, 'TXT', '/files/notes/notes.txt'),
+(809090, 'diagram.svg', ARRAY['design', 'workflow'], 153600, 'SVG', '/files/designs/diagram.svg'),
+(910909, 'invoice_2025_03.pdf', ARRAY['billing', 'March'], 128000, 'PDF', '/files/invoices/invoice_2025_03.pdf'),
+(103323, 'research_paper.docx', ARRAY['study', 'AI'], 768000, 'DOCX', '/files/research/research_paper.docx');
+
