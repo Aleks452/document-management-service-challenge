@@ -1,6 +1,6 @@
 package com.clara.ops.challenge.document_management_service_challenge.dtos;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
@@ -13,5 +13,5 @@ public class DocumentDataResponseDTO {
   private Long fileSize;
   private String fileType;
   private String minioPath;
-  private Date createdAt;
+  private LocalDateTime dateCreation;
 }

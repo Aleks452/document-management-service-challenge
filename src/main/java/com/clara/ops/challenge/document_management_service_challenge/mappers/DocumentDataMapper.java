@@ -6,14 +6,12 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface DocumentDataMapper {
 
   DocumentDataMapper INSTANCE = Mappers.getMapper(DocumentDataMapper.class);
 
-  DocumentDataResponseDTO documentDataToDocumentDataDTO(DocumentDataEntity documentDataEntity);
-
   // Mapeo de DocumentData a DocumentResponseDTO
-  List<DocumentDataResponseDTO> documentDataEntityListToDocumentDataReponseDTOList(
-      List<DocumentDataEntity> documentDataEntityList);
+  
+  List<DocumentDataResponseDTO> documentDataEntityListToDocumentDataReponseDTOList(List<DocumentDataEntity> documentDataEntityList);
 }

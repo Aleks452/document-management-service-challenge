@@ -8,7 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,5 +51,5 @@ public class DocumentDataEntity implements Serializable {
   private String minioPath;
 
   @Column(name = "created_at", nullable = false, updatable = false)
-  private Date dateCreation;
+  private LocalDateTime dateCreation;
 }
