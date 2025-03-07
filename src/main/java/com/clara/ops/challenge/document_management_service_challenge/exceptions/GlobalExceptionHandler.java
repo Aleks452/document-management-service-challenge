@@ -1,6 +1,8 @@
 package com.clara.ops.challenge.document_management_service_challenge.exceptions;
 
 import java.sql.SQLNonTransientConnectionException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.hibernate.HibernateException;
 import org.springframework.core.convert.ConversionFailedException;
@@ -8,6 +10,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -17,9 +23,45 @@ import jakarta.persistence.PersistenceException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DocumentNotFoundException.class)
-    public ResponseEntity<String> handleDocumentNotFoundException(DocumentNotFoundException ex) {
+	/**
+	 * 
+	 *  Exception become returns mandatory fields in JSON code */
+	
+	@ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
+	public ResponseEntity<Map<String, String>> handleValidationExceptions(Exception ex) {
+		
+		BindingResult bindingResult;
+		// obtaining result
+		if(ex instanceof MethodArgumentNotValidException) {
+			bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
+		} else {
+			bindingResult = ((BindException) ex).getBindingResult();
+		}
+		
+		// mapping errors
+		Map<String, String> errors = new HashMap<>();
+		
+		for(FieldError error: bindingResult.getFieldErrors()) {
+			errors.put(error.getField(), error.getDefaultMessage());
+		}
+		// response with 400 status
+	    return ResponseEntity.badRequest().body(errors) ;
+	}
+	
+	
+    @ExceptionHandler(CriterialNotFoundException.class)
+    public ResponseEntity<String> handleDocumentNotFoundException(CriterialNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    
+    @ExceptionHandler(InvalidFileFormatException.class)
+    public ResponseEntity<String> handleDocumentNotFoundException(InvalidFileFormatException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    }
+    
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    public ResponseEntity<String> handleFileSizeLimitExceeded(FileSizeLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(ex.getMessage());
     }
     
     @ExceptionHandler(DataAccessException.class)

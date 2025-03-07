@@ -11,7 +11,7 @@ public interface DocumentDataMapper {
 
   DocumentDataMapper INSTANCE = Mappers.getMapper(DocumentDataMapper.class);
 
-  // Mapeo de DocumentData a DocumentResponseDTO
+  // Mapper of DocumentDataEntity to DocumentDataResponseDTO
   
   List<DocumentDataResponseDTO> documentDataEntityListToDocumentDataReponseDTOList(List<DocumentDataEntity> documentDataEntityList);
 }

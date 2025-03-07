@@ -1,13 +1,16 @@
 package com.clara.ops.challenge.document_management_service_challenge.services;
 
+import com.clara.ops.challenge.document_management_service_challenge.dtos.DocumentDataRequestDTO;
 import com.clara.ops.challenge.document_management_service_challenge.dtos.DocumentDataResponseDTO;
 import com.clara.ops.challenge.document_management_service_challenge.entities.DocumentDataEntity;
-import com.clara.ops.challenge.document_management_service_challenge.exceptions.DocumentNotFoundException;
+import com.clara.ops.challenge.document_management_service_challenge.exceptions.CriterialNotFoundException;
 import com.clara.ops.challenge.document_management_service_challenge.mappers.DocumentDataMapper;
 import com.clara.ops.challenge.document_management_service_challenge.repositories.DocumentDataRepository;
 import com.clara.ops.challenge.document_management_service_challenge.specifications.DocumentDataSpecification;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -16,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DocumentDataService {
@@ -38,7 +42,7 @@ public class DocumentDataService {
 			Page<DocumentDataEntity> documentData = documentDataRepository.findAll(specification, pageable);
 
 			if (documentData.isEmpty()) {
-				throw new DocumentNotFoundException("No documents found matching the criteria");
+				throw new CriterialNotFoundException("No documents found matching the criteria");
 			}
 			
 			// convert using mapper
@@ -50,9 +54,28 @@ public class DocumentDataService {
 			throw e;
 		}
 	}
+		
+	 @Transactional
+	 public Integer uploadDocumentAsync(DocumentDataRequestDTO documentDataRequestDTO, String fileUrl) {
+	        try {
+	            
 
-	public String putDataDocuments(DocumentDataEntity documentDataEntity) {
-		documentDataRepository.save(documentDataEntity);
-		return "sirve";
-	}
+	            DocumentDataEntity documentEntity = new DocumentDataEntity();
+	            documentEntity.setUserId(documentDataRequestDTO.getUserId());
+	            documentEntity.setDocumentName(documentDataRequestDTO.getFile().getOriginalFilename());
+	            documentEntity.setDocumentTags(documentDataRequestDTO.getDocumentTags());
+	            documentEntity.setFileSize(documentDataRequestDTO.getFile().getSize());
+	            documentEntity.setFileType(documentDataRequestDTO.getFile().getContentType());
+	            documentEntity.setMinioPath(fileUrl); 
+	            documentEntity.setDateCreation(LocalDateTime.now());
+
+	            documentEntity = documentDataRepository.save(documentEntity);
+
+	            // Devolver respuesta
+	            return documentEntity.getDocumentId();
+	        } 
+	        catch (Exception e) {
+	            throw new RuntimeException(e.getMessage());
+	        }
+	 }     
 }
