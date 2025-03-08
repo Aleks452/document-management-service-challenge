@@ -1,9 +1,16 @@
 package com.clara.ops.challenge.document_management_service_challenge.dtos;
 
 import java.time.LocalDateTime;
-import lombok.Data;
 
-@Data
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class DocumentDataResponseDTO {
 
   private Integer documentId;

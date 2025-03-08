@@ -77,7 +77,7 @@ public class DocumentDataController {
 	        description = "This endpoint allows you to upload documents in Minio."
 	    )
   @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<String> uploadDocument(@RequestParam("userId") @NotNull @Positive Integer userId,
+  public ResponseEntity<String> uploadDocumentAsync(@RequestParam("userId") @NotNull @Positive Integer userId,
 	        					@RequestParam("documentTags") @NotNull @NotEmpty String[] documentTags,
 		  						@RequestParam("file") @NotNull MultipartFile file
 		  						) throws InterruptedException, ExecutionException {
