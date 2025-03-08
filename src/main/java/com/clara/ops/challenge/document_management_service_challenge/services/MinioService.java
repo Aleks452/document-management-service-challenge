@@ -64,7 +64,7 @@ public class MinioService {
 				return fileName;
 
 			} catch (Exception e) {
-				throw new RuntimeException("Error uploading file", e);
+				throw new RuntimeException(e.getMessage());
 			}
 		});
 	}
@@ -81,7 +81,7 @@ public class MinioService {
         		        .build()
         		);
         } catch (Exception e) {
-            throw new RuntimeException("Error generating download link", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 	
