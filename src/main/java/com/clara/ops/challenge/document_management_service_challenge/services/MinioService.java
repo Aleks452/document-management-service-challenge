@@ -38,7 +38,7 @@ public class MinioService {
 	public CompletableFuture<String> uploadDocumentAsync(DocumentDataRequestDTO documentDataRequestDTO) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				
+				System.out.println("Ejecutando en hilo: " + Thread.currentThread().getName());
 				String fileName = documentDataRequestDTO.getUserId() + "/" + documentDataRequestDTO.getFile().getOriginalFilename();
 				MultipartFile file = documentDataRequestDTO.getFile();
 
