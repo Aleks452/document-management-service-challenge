@@ -5,7 +5,7 @@ import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
 public class StringArrayConverter implements AttributeConverter<String[], String> {
-  
+
   @Override
   public String convertToDatabaseColumn(String[] attribute) {
     // Convert String[] to String
@@ -18,4 +18,3 @@ public class StringArrayConverter implements AttributeConverter<String[], String
     return dbData == null || dbData.isEmpty() ? new String[] {} : dbData.split(",");
   }
 }
-
