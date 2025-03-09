@@ -1,170 +1,131 @@
-# 📄 Document Management API Challenge
+# Document management service
 
-## Overview 🚀
+## Description
 
-In this challenge, you will build a backend API service to manage **large PDF documents**. The service must allow users to upload, search, and download PDF documents while efficiently handling resources, given a **memory limitation of 50MB assigned to the document management service container**.
-This challenge is designed for a mid-senior engineer to demonstrate advanced skills in **Spring Boot, Java, REST API development, testing, containerization, and cloud storage integration**.
+This project is a backend application built with Java 17 and Spring Boot. It includes unit tests using Mockito and performance tests using JMeter. The application is containerized using Docker and relies on PostgreSQL as the database and MinIO for storage.
 
-## Functional Requirements ✅
+## Prerequisites
 
-### 1. Upload Endpoint ⬆️
+Before running the application, ensure you have the following installed:
 
-- **Functionality:**  
-  Allow uploading a PDF document along with the following metadata:
-  - **User:** A string identifying the user associated with the document.
-  - **Document Name:** The name provided in the request will be used as the file name.
-  - **Tags:** A list of tags associated with the document.
-- **Technical Constraints:**
-  - The service must handle PDF uploads of up to 500MB.
-  - The uploaded PDF should be stored in an bucket (simulated via MinIO) with the following directory structure:
+- **Java 17**
+- **Maven**
+- **Docker & Docker Compose**
 
-    ```
-    document-bucket/
-      ├─ user1/
-      │  ├─ doc1.pdf
-      │  ├─ doc2.pdf
-      ├─ user2/
-      │  ├─ doc3.pdf
-    ```
-  - Metadata must be persisted in a PostgreSQL database with the following fields:
-    - **User**
-    - **Document Name**
-    - **Tags**
-    - **MinIO Path**
-    - **File Size**
-    - **File Type**
-    - **Created At**
-    - **Include any additional fields you deem necessary**
+## Environment Variables
 
-**📌 Storage Requirement: Uploading Documents to MinIO**
+The following environment variables must be created and configured before running the application:
 
-All uploaded documents must be stored in MinIO to ensure scalability and efficient storage management. The service will interact with MinIO to handle file uploads and generate temporary access URLs for retrieval. For detailed instructions on how to set up and use MinIO locally, please refer to the following document:
-📄 [MinIO Local Setup Guide](docs/minio-local-setup.md).
+### PostgreSQL:
 
-### 2. Search Endpoint 🔍
+```sh
+export POSTGRESQL_USERNAME=<your_postgresql_username>
+export POSTGRESQL_PASSWORD=<your_postgresql_password>
+export POSTGRESQL_DATABASE=challenge
+export POSTGRESQL_POSTGRES_PASSWORD=<your_postgresql_postgres_password>
+```
 
-- **Functionality:**  
-  Allow querying documents with optional filters:
-  - **Filters:** User, Document Name, and Tags.
-  - If no filters are provided, return all documents.
-  - Results should be ordered by `created_at` in descending order.
-  - The endpoint must support pagination using `page` and `size` parameters.
-- **Note:**  
-  This endpoint should not return any download URL.
+### MinIO:
 
-### 3. Download Endpoint ⬇️
+```sh
+export MINIO_ACCESS_KEY=<your_minio_access_key>
+export MINIO_SECRET_KEY=<your_minio_secret_key>
+```
 
-- **Functionality:**  
-  Allow downloading a document using its ID. The endpoint should return a temporary download URL that enables secure access to the document stored in MinIO.
+Alternatively, you can configure them in a `.env` file and use `docker-compose` to load them.
 
-- **Implementation:**  
-  Generate a temporary download URL using MinIO’s pre-signed URL functionality. The service will utilize MinIO to generate a temporary download link based on the document's ID, allowing the document to be securely accessed without exposing direct storage paths.
+## Running the Application
 
-### Note:
+The application is fully containerized, so you can start it using Docker Compose:
 
-For more details on how to use MinIO, refer to the documentation:
-📄 [MinIO Local Setup Guide](docs/minio-local-setup.md).
+```sh
+docker-compose up -d --build
+```
 
-## Technical Requirements ⚙️
+This command will:
+- Build the application using the `Dockerfile`
+- Start the PostgreSQL database
+- Start the MinIO storage service
+- Run the backend application
 
-- **Memory Limitation:**  
-  The service memory is limited to 50MB. You must design your solution to efficiently manage memory during file upload and processing, even when handling uploads of files up to 500MB.
+### Application Ports
 
-- **Concurrent Uploads:**  
-  The system must be capable of handling up to 10 documents being uploaded in parallel, with each document having a size of up to 500MB.
+- Spring Boot: **8080**
+- PostgreSQL: **5432**
+- MinIO (S3): **9000**
+- MinIO (Web Console): **9001**
 
-- **Upload time limit:**  
-  There are no restrictions on the time it takes to upload files. Only, ensure that the service can handle uploads of up to 500MB without exceeding the memory limitation.
+## Running Tests
 
-- **Provided Artifacts:**
+### Unit Tests (Mockito)
 
-  - OpenAPI specification that includes the contract for the endpoints.
-    - Reference: [document-management-open-api.yml](docs/document-management-open-api.yml).
-    - You can visualize the content using [Swagger Editor](https://editor-next.swagger.io/).
-  - A docker-compose stack that includes PostgreSQL, and the Document Management Service.
-  - Integrated tools:
-    - **Spring Boot:** The project is pre-configured with Spring Boot.
-    - **Spring Data JPA:** For database operations.
-    - **MinIO:** For simulating bucket operations services locally.
-    - **Lombok:** For reducing boilerplate code.
-    - **JUnit 5:** For unit and integration testing.
-    - **Mockito:** For mocking dependencies in tests.
-    - **AssertJ:** For fluent assertions in tests.
-    - **Jacoco:** for code coverage (run `./mvnw jacoco:report` to generate the report).
-    - **Spotless:** for code formatting (run `./mvnw spotless:apply` to format your code).
-- **Java Version:**  
-  The project is configured with Java 17, but you may restrict your solution to features available in Java 8 if necessary.
-- **Schema Management:**  
-  Provide a script for creating the database schema, ensuring efficient handling of multiple tags per document.
-- **Documentation:**  
-  (Optional) Include OpenAPI documentation for the API endpoints.
+Run the unit tests with:
 
-## Implementation Instructions 🛠️
+```sh
+mvn test
+```
 
-1. Use this repository as the starting point for your solution. If possible, create a fork of the repository.
-2. Implement the endpoints as per the provided OpenAPI specification.
-3. Configure an MinIO client.
-4. Configure a connection to PostgreSQL.
-5. Include your database schema script in `docker/init-scripts/schema-init.sql`.
-6. Create the Dockerfile for the `document-management-service`.
-7. Modify the docker-compose.yml file to add the necessary configuration for including the document-management-service in the stack. Ensure that the service correctly connects to PostgreSQL and MinIO.
-8. Implement the required functionality for the Document Management Service.
-9. Once your functionality is ready, validate it using Postman. Please note that you must start the stack using `docker-compose up --build`.
-10. Commit your changes. It is recommended to maintain a clean commit history, ideally using [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0-beta.4/).
-11. Push your changes to a personal GitHub account and share the URL of your solution.
+### Performance Tests (JMeter)
 
-**⚠️ Note:**
-All configurations (database credentials, MinIO/S3 settings, etc.) must be externalized using environment variables and configuration files. Avoid hardcoding sensitive information in the source code.
+JMeter tests are executed manually. First, run the tests with:
 
-## Evaluation Criteria 🏆
+```sh
+jmeter -n -t challengue.jmx -l challengue_results.jtl
+```
 
-- **Database Schema and Indexing:**  
-  Evaluate the efficiency of your database schema, including the creation of indices and the management of multiple tags per document.
+Then, generate the HTML report with:
 
-- **Design Patterns and Best Practices:**  
-  Assess the use of design patterns (e.g., Controller-Service-Repository or Hexagonal Architecture) and adherence to SOLID principles and clean code practices.
+```sh
+jmeter -g challengue_results.jtl -o challengue_report_html
+```
 
-- **Code Quality:**  
-  Review for readability, maintainability, proper exception handling, and overall coding standards.
+The result will, be available in index.html in challengue_report_html folder
 
-- **Testing:**  
-  Evaluate the quality and coverage of unit and integration tests. While no specific coverage percentage is required, tests should cover the most critical functionalities and edge cases.
+## Jmeter Chart
 
-- **Spring Boot and Java Proficiency:**  
-  Demonstrate effective use of Spring Boot features and Java (preferably Java 17, though Java 8+ is acceptable).
+<img src="docs/assets/jmeter-results.jpg" width="700" height="400">
 
-- **Additional Considerations:**
+In this test in the upload endpoint we load around 75 document using different threads
 
-  - Overall robustness and efficiency under concurrent file uploads.
-  - Validations on models and DTOs (e.g., non-null constraints).
-  - (Optional) OpenAPI documentation.
+## Code Quality Report
 
-## Challenge Priorities 🎯
+The project includes code quality analysis using **JaCoCo**. To generate the coverage report, run:
 
-1. **Upload Service:**
-   - Primary focus on implementing a robust upload endpoint that efficiently handles large file (**up to 500MB of size**) uploads within the 50MB memory constraint.
-2. **Search Service:**
-   - Implement a flexible and efficient search endpoint with filtering, sorting, and pagination.
-3. **Download Service:**
-   - Provide document download functionality via temporary AWS S3 URLs.
+```sh
+mvn clean verify
+```
 
-> **Note:** It is acceptable to implement a subset of the endpoints. However, the more complete your solution, the better.
+The generated report will be available in:
 
-## Submission Instructions 📤
+```
+target/site/jacoco/index.html
+```
 
-Ensure that your solution includes the Dockerfile and database schema script, and that it adheres to the challenge requirements.
+## Jacoco Chart
 
-### Additional Comments 💬
+<img src="docs/assets/jacoco-results.jpg" width="700" height="400">
 
-If you have any additional notes, explanations, or assumptions regarding your implementation, feel free to include them in this section. This can help provide more context to reviewers.
+## Project Structure
 
----
+```
+/ (Root)
+│── src/main/java/         								# Application source code
+│── src/test/java/         								# Unit tests (Mockito)
+│── src/test/jmeter/       								# JMeter test files
+│── Dockerfile             								# Docker build instructions
+│── docker/docker-compose.yml     						# Docker Compose configuration
+│── docker/docker/init-scripts/schema-init.sql     	# Script to execute schema and create table
+│── pom.xml                								# Maven dependencies and build config
+│── README.md              								# Project documentation
+```
 
-**⚠️ Important Note About the Challenge Completion ⚠️**
+## Additional Notes
 
-Even if you are unable to complete the challenge 100%, please explain why you couldn't proceed, what doubts you had, and any blockers you encountered. We will review each case individually to determine how it impacts the evaluation.
+- The PostgreSQL database is configured in `docker-compose.yml`, and its credentials must be set via environment variables.
+- The application automatically starts after the containers are up, as defined in the `Dockerfile`.
+- MinIO is also included in the `docker-compose.yml` to handle storage.
+- Test were done only in controller to validate the correct functionality of the endpoints
 
-### **Note: Your approach, problem-solving skills, and reasoning are just as important as the final implementation.**
+## License
 
----
-
+No license
