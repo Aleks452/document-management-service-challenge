@@ -91,7 +91,7 @@ public class DocumentDataControllerTest {
         documentDataController.getDataDocuments(page, size, documentName, userId, documentTags);
 
     // Verify
-    assertEquals(200, response.getStatusCode());
+    assertEquals(200, response.getStatusCodeValue());
     assertEquals(
         "Document 1",
         response.getBody().getContent().iterator().next().getContent().getDocumentName());
@@ -147,7 +147,7 @@ public class DocumentDataControllerTest {
 
     // Verify values
     assertNotNull(response);
-    assertEquals(200, response.getStatusCode());
+    assertEquals(200, response.getStatusCodeValue());
     assertEquals(downloadUrl, response.getBody());
 
     // Verify methods

@@ -14,10 +14,7 @@ services:
       - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
       - POSTGRESQL_DATABASE=challenge
       - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRESQL_POSTGRES_PASSWORD} # Password of user "postgres"
-    deploy:
-      resources:
-        limits:
-          memory: 50M # put 50M to limit use
+    
   app:
     build: #sping configuration to deploy
       context: ..
